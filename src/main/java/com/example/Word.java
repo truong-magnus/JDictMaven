@@ -1,19 +1,39 @@
 package com.example;
 
+/**
+ * Represents a vocabulary entity in the system.
+ * Maps directly to the 'vocabularies' table in the database.
+ */
 public class Word {
-    private int id;           // <--- NEW: Maps to Database ID
-    private String kanji;
-    private String hiragana;
-    private String meaning;
+    private int id;           // Primary Key
+    private String kanji;     // e.g., 食べる
+    private String hiragana;  // e.g., たべる
+    private String meaning;   // e.g., To eat
 
-    // Constructor 1: Used when creating a new word (ID not generated yet)
+    // --- CONSTRUCTORS ---
+
+    /**
+     * Default constructor.
+     * Required by Spring Boot (Jackson) for JSON deserialization.
+     */
+    public Word() {
+    }
+
+    /**
+     * Constructor for creating a new word before saving to DB (no ID yet).
+     * @param kanji The Kanji character
+     * @param hiragana The Hiragana reading
+     * @param meaning The meaning in English/Vietnamese
+     */
     public Word(String kanji, String hiragana, String meaning) {
         this.kanji = kanji;
         this.hiragana = hiragana;
         this.meaning = meaning;
     }
 
-    // Constructor 2: Used when reading from Database (ID already exists)
+    /**
+     * Constructor for mapping data from DB (ID exists).
+     */
     public Word(int id, String kanji, String hiragana, String meaning) {
         this.id = id;
         this.kanji = kanji;
@@ -21,7 +41,8 @@ public class Word {
         this.meaning = meaning;
     }
 
-    // Getters & Setters
+    // --- GETTERS & SETTERS ---
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -36,7 +57,6 @@ public class Word {
 
     @Override
     public String toString() {
-        // Display ID as well
         return String.format("[%d] %s - %s : %s", id, kanji, hiragana, meaning);
     }
 }
