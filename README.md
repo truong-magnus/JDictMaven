@@ -73,22 +73,22 @@ git clone https://github.com/truong-magnus/JDictMaven.git
 cd JDictMaven
 ```
 ### Step 2: Database Configuration
-```bash
-Open the file src/main/java/com/example/DatabaseConnection.java.
-Update the USER and PASSWORD constants to match your local MySQL configuration:
 
+* Open the file ```src/main/java/com/example/DatabaseConnection.java```.
+* Update the USER and PASSWORD constants to match your local MySQL configuration:
+```bash
 private static final String USER = "root";
 private static final String PASSWORD = "your_password"; // <-- Update if you have a password
+```
+* Run the database.sql script (located in the root folder) using a database tool (DBeaver, MySQL Workbench) to create the schema and initial data.
 
-Run the database.sql script (located in the root folder) using a database tool (DBeaver, MySQL Workbench) to create the schema and initial data.
-```
 ### Step 3: Run the Application
-```bash
-Open the project in IntelliJ IDEA.
-Allow Maven to download all dependencies.
-Run the JDictApplication.java file.
-Open your browser and navigate to: http://localhost:8080
-```
+
+* Open the project in IntelliJ IDEA.
+* Allow Maven to download all dependencies.
+* Run the ```JDictApplication.java```file.
+* Open your browser and navigate to: http://localhost:8080
+
 # 🤝 Contributing
 Contributions are welcome! If you find any bugs or want to add new features, please feel free to submit a Pull Request.
 
