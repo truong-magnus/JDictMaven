@@ -53,7 +53,7 @@
 ## 📸 Screenshots
 
 <div align="center">
-  <img src="https://via.placeholder.com/800x400.png?text=J-Dict+Pro+Web+Interface" alt="J-Dict Web UI Screenshot" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+  <img src="https://github.com/user-attachments/assets/ad68fcf4-d644-4c3d-9957-4bda4060c360" alt="J-Dict Web UI Screenshot" style="border-radius: 10px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
   <p><em>Main Dashboard Interface</em></p>
 </div>
 
