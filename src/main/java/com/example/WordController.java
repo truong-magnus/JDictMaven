@@ -1,6 +1,7 @@
 package com.example;
 
 import org.springframework.web.bind.annotation.*;
+
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -10,6 +11,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api") // Base URL for all endpoints
+@CrossOrigin(origins = "*") // Access
 public class WordController {
 
     private final WordDAO wordDAO = new WordDAO();
@@ -19,6 +21,7 @@ public class WordController {
     /**
      * Get all words from the database.
      * Endpoint: GET /api/words
+     *
      * @return List of Word objects in JSON format.
      */
     @GetMapping("/words")
@@ -29,6 +32,7 @@ public class WordController {
     /**
      * Search for words containing the keyword.
      * Endpoint: GET /api/search?keyword=...
+     *
      * @param keyword The search term (Kanji, Hiragana, or Meaning)
      * @return List of matching words.
      */
@@ -42,6 +46,7 @@ public class WordController {
     /**
      * Add a new word to the database.
      * Endpoint: POST /api/words
+     *
      * @param newWord The Word object sent in the request body (JSON).
      * @return A success message.
      */
@@ -57,7 +62,8 @@ public class WordController {
     /**
      * Update an existing word by ID.
      * Endpoint: PUT /api/words/{id}
-     * @param id The ID of the word to update (from URL path).
+     *
+     * @param id          The ID of the word to update (from URL path).
      * @param updatedWord The new data for the word (from request body).
      * @return A success message.
      */
@@ -75,6 +81,7 @@ public class WordController {
     /**
      * Delete a word by ID.
      * Endpoint: DELETE /api/words/{id}
+     *
      * @param id The ID of the word to delete.
      * @return A success message.
      */
