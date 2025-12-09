@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J-Dict Pro | Japanese Dictionary</title>
+    <style>
+        /* --- CSS: UI Styling --- */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 500px;
+        }
+        h2 { text-align: center; color: #333; }
+
+        /* Input Form Styles */
+        .input-group { margin-bottom: 15px; }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background-color: #218838; }
+
+        /* List Styles */
+        ul { list-style-type: none; padding: 0; margin-top: 20px; }
+        li {
+            background: #fff;
+            border-bottom: 1px solid #eee;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .word-info { display: flex; flex-direction: column; }
+        .kanji { font-size: 18px; font-weight: bold; color: #d63384; }
+        .meaning { font-size: 14px; color: #555; }
+
+        /* Delete Button Styles */
+        .delete-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>🇯🇵 J-Dict Manager</h2>
+
+    <div class="input-group">
+        <input type="text" id="kanji" placeholder="Kanji (e.g. 先生)">
+        <input type="text" id="hiragana" placeholder="Hiragana (e.g. せんせい)">
+        <input type="text" id="meaning" placeholder="Meaning (e.g. Teacher)">
+    </div>
+    <button onclick="addWord()">Add Word</button>
+
+    <ul id="wordList">
+    </ul>
+</div>
+
+<script>
+    // Backend API Endpoint
+    const API_URL = "http://localhost:8080/api/words";
+
+    // 1. Function to fetch and display words on startup
+    async function loadWords() {
+        try {
+            // Fetch data from API (GET request)
+            const response = await fetch(API_URL);
+            const words = await response.json();
+
+            // Clear the existing list
+            const list = document.getElementById("wordList");
+            list.innerHTML = "";
+
+            // Iterate through the data and render HTML elements
+            words.forEach(word => {
+                const li = document.createElement("li");
+                li.innerHTML = `
+                    <div class="word-info">
+                        <span class="kanji">${word.kanji} (${word.hiragana})</span>
+                        <span class="meaning">${word.meaning}</span>
+                    </div>
+                    <button class="delete-btn" onclick="deleteWord(${word.id})">Delete</button>
+                `;
+                list.appendChild(li);
+            });
+        } catch (error) {
+            console.error("Error loading words:", error);
+        }
+    }
+
+    // 2. Function to add a new word
+    async function addWord() {
+        // Get values from input fields
+        const kanji = document.getElementById("kanji").value;
+        const hiragana = document.getElementById("hiragana").value;
+        const meaning = document.getElementById("meaning").value;
+
+        // Validation
+        if(!kanji || !meaning) {
+            alert("Please enter Kanji and Meaning!");
+            return;
+        }
+
+        const newWord = { kanji, hiragana, meaning };
+
+        try {
+            // Send data to API (POST request)
+            await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newWord)
+            });
+
+            // Clear inputs and reload list
+            document.getElementById("kanji").value = "";
+            document.getElementById("hiragana").value = "";
+            document.getElementById("meaning").value = "";
+            loadWords();
+        } catch (error) {
+            console.error("Error adding word:", error);
+            alert("Failed to add word.");
+        }
+    }
+
+    // 3. Function to delete a word
+    async function deleteWord(id) {
+        if(confirm("Are you sure you want to delete this word?")) {
+            try {
+                // Send delete request to API (DELETE request)
+                await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+                loadWords(); // Refresh the list
+            } catch (error) {
+                console.error("Error deleting word:", error);
+                alert("Failed to delete word.");
+            }
+        }
+    }
+
+    // Initialize the app
+    loadWords();
+</script>
+
+</body>
+</html>

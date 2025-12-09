@@ -24,11 +24,21 @@ public class Main {
             String choice = scanner.nextLine();
 
             switch (choice) {
-                case "1": addNewWord(scanner); break;
-                case "2": showAllWords(); break;
-                case "3": searchWord(scanner); break;
-                case "4": updateWord(scanner); break;
-                case "5": deleteWord(scanner); break;
+                case "1":
+                    addNewWord(scanner);
+                    break;
+                case "2":
+                    showAllWords();
+                    break;
+                case "3":
+                    searchWord(scanner);
+                    break;
+                case "4":
+                    updateWord(scanner);
+                    break;
+                case "5":
+                    deleteWord(scanner);
+                    break;
                 case "6":
                     System.out.println("Goodbye!");
                     return;

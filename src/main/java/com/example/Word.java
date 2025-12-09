@@ -21,9 +21,10 @@ public class Word {
 
     /**
      * Constructor for creating a new word before saving to DB (no ID yet).
-     * @param kanji The Kanji character
+     *
+     * @param kanji    The Kanji character
      * @param hiragana The Hiragana reading
-     * @param meaning The meaning in English/Vietnamese
+     * @param meaning  The meaning in English/Vietnamese
      */
     public Word(String kanji, String hiragana, String meaning) {
         this.kanji = kanji;
@@ -43,17 +44,37 @@ public class Word {
 
     // --- GETTERS & SETTERS ---
 
-    public int getId() { return id; }
-    public void setId(int id) { this.id = id; }
+    public int getId() {
+        return id;
+    }
 
-    public String getKanji() { return kanji; }
-    public void setKanji(String kanji) { this.kanji = kanji; }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    public String getHiragana() { return hiragana; }
-    public void setHiragana(String hiragana) { this.hiragana = hiragana; }
+    public String getKanji() {
+        return kanji;
+    }
 
-    public String getMeaning() { return meaning; }
-    public void setMeaning(String meaning) { this.meaning = meaning; }
+    public void setKanji(String kanji) {
+        this.kanji = kanji;
+    }
+
+    public String getHiragana() {
+        return hiragana;
+    }
+
+    public void setHiragana(String hiragana) {
+        this.hiragana = hiragana;
+    }
+
+    public String getMeaning() {
+        return meaning;
+    }
+
+    public void setMeaning(String meaning) {
+        this.meaning = meaning;
+    }
 
     @Override
     public String toString() {
