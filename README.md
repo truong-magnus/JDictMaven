@@ -86,7 +86,7 @@ private static final String PASSWORD = "your_password"; // <-- Update if you hav
 
 * Open the project in IntelliJ IDEA.
 * Allow Maven to download all dependencies.
-* Run the ```JDictApplication.java```file.
+* Run the```JDictApplication.java```file.
 * Open your browser and navigate to: http://localhost:8080
 
 # 🤝 Contributing
