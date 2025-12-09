@@ -6,69 +6,35 @@
     <title>J-Dict Pro | Japanese Dictionary</title>
     <style>
         /* --- CSS: UI Styling --- */
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background-color: #f4f4f9;
-            display: flex;
-            justify-content: center;
-            padding: 20px;
-        }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            width: 500px;
-        }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f4f9; display: flex; justify-content: center; padding: 20px; }
+        .container { background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 500px; }
         h2 { text-align: center; color: #333; }
 
         /* Input Form Styles */
         .input-group { margin-bottom: 15px; }
-        input {
-            width: 100%;
-            padding: 10px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover { background-color: #218838; }
+        input { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box; }
+
+        /* Search Box */
+        .search-box { margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .search-box input { background-color: #f8f9fa; border-color: #007bff; }
+
+        /* Buttons */
+        .btn-save { width: 100%; padding: 10px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 10px; }
+        .btn-save:hover { background-color: #218838; }
+
+        .btn-cancel { width: 100%; padding: 10px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; margin-top: 5px; display: none; } /* Hidden by default */
 
         /* List Styles */
         ul { list-style-type: none; padding: 0; margin-top: 20px; }
-        li {
-            background: #fff;
-            border-bottom: 1px solid #eee;
-            padding: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+        li { background: #fff; border-bottom: 1px solid #eee; padding: 10px; display: flex; justify-content: space-between; align-items: center; }
         .word-info { display: flex; flex-direction: column; }
         .kanji { font-size: 18px; font-weight: bold; color: #d63384; }
         .meaning { font-size: 14px; color: #555; }
 
-        /* Delete Button Styles */
-        .delete-btn {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-            width: auto;
-        }
+        /* Action Buttons */
+        .actions { display: flex; gap: 5px; }
+        .edit-btn { background-color: #ffc107; color: black; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+        .delete-btn { background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 12px; }
     </style>
 </head>
 <body>
@@ -76,33 +42,40 @@
 <div class="container">
     <h2>🇯🇵 J-Dict Manager</h2>
 
+    <div class="search-box">
+        <input type="text" id="searchInput" placeholder="🔍 Search Kanji, Hiragana or Meaning..." onkeyup="searchWords()">
+    </div>
+
     <div class="input-group">
+        <input type="hidden" id="wordId">
+
         <input type="text" id="kanji" placeholder="Kanji (e.g. 先生)">
         <input type="text" id="hiragana" placeholder="Hiragana (e.g. せんせい)">
         <input type="text" id="meaning" placeholder="Meaning (e.g. Teacher)">
+
+        <button class="btn-save" id="saveBtn" onclick="saveWord()">Add Word</button>
+        <button class="btn-cancel" id="cancelBtn" onclick="resetForm()">Cancel Edit</button>
     </div>
-    <button onclick="addWord()">Add Word</button>
 
     <ul id="wordList">
     </ul>
 </div>
 
 <script>
-    // Backend API Endpoint
-    const API_URL = "http://localhost:8080/api/words";
+    const API_URL = "http://localhost:8080/api";
 
-    // 1. Function to fetch and display words on startup
-    async function loadWords() {
+    // 1. Fetch and display words (Supports Search)
+    async function loadWords(keyword = "") {
         try {
-            // Fetch data from API (GET request)
-            const response = await fetch(API_URL);
+            // If keyword exists, call search API, otherwise call get-all API
+            let url = keyword ? `${API_URL}/search?keyword=${keyword}` : `${API_URL}/words`;
+
+            const response = await fetch(url);
             const words = await response.json();
 
-            // Clear the existing list
             const list = document.getElementById("wordList");
             list.innerHTML = "";
 
-            // Iterate through the data and render HTML elements
             words.forEach(word => {
                 const li = document.createElement("li");
                 li.innerHTML = `
@@ -110,7 +83,10 @@
                         <span class="kanji">${word.kanji} (${word.hiragana})</span>
                         <span class="meaning">${word.meaning}</span>
                     </div>
-                    <button class="delete-btn" onclick="deleteWord(${word.id})">Delete</button>
+                    <div class="actions">
+                        <button class="edit-btn" onclick="editMode(${word.id}, '${word.kanji}', '${word.hiragana}', '${word.meaning}')">Edit</button>
+                        <button class="delete-btn" onclick="deleteWord(${word.id})">Delete</button>
+                    </div>
                 `;
                 list.appendChild(li);
             });
@@ -119,55 +95,88 @@
         }
     }
 
-    // 2. Function to add a new word
-    async function addWord() {
-        // Get values from input fields
+    // 2. Search Function (Triggered on keyup)
+    function searchWords() {
+        const keyword = document.getElementById("searchInput").value;
+        loadWords(keyword);
+    }
+
+    // 3. Save Function (Handles both ADD and UPDATE)
+    async function saveWord() {
+        const id = document.getElementById("wordId").value; // Get Hidden ID
         const kanji = document.getElementById("kanji").value;
         const hiragana = document.getElementById("hiragana").value;
         const meaning = document.getElementById("meaning").value;
 
-        // Validation
         if(!kanji || !meaning) {
             alert("Please enter Kanji and Meaning!");
             return;
         }
 
-        const newWord = { kanji, hiragana, meaning };
+        const wordData = { kanji, hiragana, meaning };
 
         try {
-            // Send data to API (POST request)
-            await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(newWord)
-            });
-
-            // Clear inputs and reload list
-            document.getElementById("kanji").value = "";
-            document.getElementById("hiragana").value = "";
-            document.getElementById("meaning").value = "";
-            loadWords();
-        } catch (error) {
-            console.error("Error adding word:", error);
-            alert("Failed to add word.");
-        }
-    }
-
-    // 3. Function to delete a word
-    async function deleteWord(id) {
-        if(confirm("Are you sure you want to delete this word?")) {
-            try {
-                // Send delete request to API (DELETE request)
-                await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-                loadWords(); // Refresh the list
-            } catch (error) {
-                console.error("Error deleting word:", error);
-                alert("Failed to delete word.");
+            if (id) {
+                // --- UPDATE MODE (PUT) ---
+                await fetch(`${API_URL}/words/${id}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(wordData)
+                });
+            } else {
+                // --- ADD MODE (POST) ---
+                await fetch(`${API_URL}/words`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(wordData)
+                });
             }
+
+            resetForm(); // Clear inputs
+            loadWords(); // Refresh list
+        } catch (error) {
+            console.error("Error saving word:", error);
+            alert("Failed to save word.");
         }
     }
 
-    // Initialize the app
+    // 4. Delete Function
+    async function deleteWord(id) {
+        if(confirm("Are you sure?")) {
+            await fetch(`${API_URL}/words/${id}`, { method: "DELETE" });
+            loadWords();
+        }
+    }
+
+    // 5. Enable Edit Mode (Fill form with data)
+    function editMode(id, k, h, m) {
+        document.getElementById("wordId").value = id; // Set Hidden ID
+        document.getElementById("kanji").value = k;
+        document.getElementById("hiragana").value = h;
+        document.getElementById("meaning").value = m;
+
+        // Change Button Text and Show Cancel Button
+        document.getElementById("saveBtn").innerText = "Update Word";
+        document.getElementById("saveBtn").style.backgroundColor = "#ffc107"; // Yellow color
+        document.getElementById("saveBtn").style.color = "black";
+        document.getElementById("cancelBtn").style.display = "block";
+    }
+
+    // 6. Reset Form to Add Mode
+    function resetForm() {
+        document.getElementById("wordId").value = ""; // Clear ID
+        document.getElementById("kanji").value = "";
+        document.getElementById("hiragana").value = "";
+        document.getElementById("meaning").value = "";
+
+        // Reset Buttons
+        document.getElementById("saveBtn").innerText = "Add Word";
+        document.getElementById("saveBtn").style.backgroundColor = "#28a745"; // Green color
+        document.getElementById("saveBtn").style.color = "white";
+        document.getElementById("cancelBtn").style.display = "none";
+    }
+
+    // Initial load
     loadWords();
 </script>
 
